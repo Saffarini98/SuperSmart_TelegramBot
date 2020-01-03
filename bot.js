@@ -149,10 +149,7 @@ bot.onText(/\/settings/, function (msg, match) {
 bot.on("message", msg => {
   const Hi = ["hi"];
   if (
-    msg.text
-    .toString()
-    .toLowerCase()
-    .indexOf(Hi) === 0
+    msg.text.toString().toLowerCase().indexOf(Hi) === 0
   ) {
     bot.sendMessage(
       msg.chat.id,
@@ -161,16 +158,13 @@ bot.on("message", msg => {
   }
   const Bye = "bye";
   if (
-    msg.text
-    .toString()
-    .toLowerCase()
-    .includes(Bye)
+    msg.text.toString().toLowerCase().includes(Bye)
   ) {
     bot.sendMessage(msg.chat.id, "Hope to see you around again , adiós 👋");
   }
 
   const you = "Who are you?";
-  if (msg.text.indexOf(you) === 0) {
+  if (msg.text.toString().toLowerCase().indexOf(you) === 0) {
     bot.sendMessage(msg.chat.id, " <b>Yes I'm robot but not in that way!</b>", {
       parse_mode: "HTML"
     });

@@ -20,13 +20,7 @@ bot.onText(/\/start/, function (msg, match) {
   var resp = match[1];
   bot.sendMessage(
     chatId,
-    "<i>This is Maxim Saffarini's Telegram Bot that shows weather🌦, currency rate 💵 etc.</i> \n\n<b>List of commands: </b>" +
-    "\n/weather - Weather forecast" +
-    "\n/currency - Today's currency rate " +
-    "\n/movie - After this command just write the name of the movie" +
-    "\n/about - Short information about the Telegram Bot" +
-    "\n/settings - Available changes " +
-    "\n \n<b>OR</b>\n \nJust type <b>/</b> ", {
+    "\nPress <b>/fastKeyboard</b>\n  ", {
       parse_mode: "HTML"
     }
   );

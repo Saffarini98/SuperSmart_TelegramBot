@@ -2,8 +2,8 @@ const token = process.env.TOKEN;
 const Bot = require("node-telegram-bot-api");
 let bot;
 const request = require("request");
-var weather = require("./weather");
-const MovieService = require("./lib/MovieSearcher");
+const MovieSearcher = require("./lib/MovieSearcher");
+const WeatherSearcher = require("./lib/WeatherForecast");
 
 if (process.env.NODE_ENV === "production") {
   bot = new Bot(token);
@@ -13,8 +13,6 @@ if (process.env.NODE_ENV === "production") {
     polling: true
   });
 }
-
-weather(bot);
 
 console.log("Bot server started in the " + process.env.NODE_ENV + " mode");
 bot.onText(/\/start/, (msg, match) => {
@@ -31,7 +29,7 @@ bot.onText(/\/movie (.+)/, (msg, match) => {
   const movie = match[1];
   const chatId = msg.chat.id;
 
-  MovieService.findMovie(movie)
+  MovieSearcher.findMovie(movie)
     .then(film => {
       bot.sendPhoto(chatId, film.Poster, {
         caption:
@@ -56,6 +54,50 @@ bot.onText(/\/movie (.+)/, (msg, match) => {
     });
 });
 
+bot.onText(/\/weather/, (msg, match) => {
+  const chatId = msg.chat.id;
+
+  bot.sendMessage(chatId, "Choose the city", {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "Moscow",
+            callback_data: "Moscow"
+          },
+          {
+            text: "STHLM",
+            callback_data: "Stockholm"
+          },
+          {
+            text: "Dubai",
+            callback_data: "Dubai"
+          },
+          {
+            text: "Alanya",
+            callback_data: "Alanya"
+          }
+        ]
+      ]
+    }
+  });
+});
+//https://thehooraymedia.com/telegram-bot-the-new-ui/
+bot.on("callback_query", async callbackQuery => {
+  const message = callbackQuery.message;
+  const chatId = message.chat.id;
+  // const { id } = message.chat;
+
+  const result = await WeatherSearcher.getWeatherByCity(callbackQuery.data)
+    .then(weatherCity => {
+      return weatherCity;
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  const { name, main, temp } = result;
+  bot.sendMessage(chatId, `Weather in ${name}: ${main}, ${temp}°C`);
+});
 
 bot.onText(/\/KeyboardMarkup/, msg => {
   bot.sendMessage(
@@ -64,7 +106,7 @@ bot.onText(/\/KeyboardMarkup/, msg => {
     {
       reply_markup: {
         keyboard: [
-          ["Currency", "Weather"],
+          ["/currency", "/weather"],
           ["Cool", "More options"],
           ["I'm robot"]
         ],
@@ -74,29 +116,6 @@ bot.onText(/\/KeyboardMarkup/, msg => {
       }
     }
   );
-  // bot.sendMessage(msg.chat.id, "Choose the currency", {
-  //   reply_markup: {
-  //     inline_keyboard: [
-  //       [{
-  //           text: "USD",
-  //           callback_data: "USD"
-  //         },
-  //         {
-  //           text: "EUR",
-  //           callback_data: "EUR"
-  //         },
-  //         {
-  //           text: "RUB",
-  //           callback_data: "RUB"
-  //         },
-  //         {
-  //           text: "SEK",
-  //           callback_data: "SEK"
-  //         }
-  //       ]
-  //     ]
-  //   }
-  // });
 });
 
 bot.onText(/\/help/, (msg, match) => {

@@ -1,5 +1,5 @@
 {
-  "name": "heroku-node-telegram-bot",
+  "name": "super-smart-telegram-bot",
   "version": "1.0.3",
   "description": "Telegram bot on the Heroku using Node.js",
   "main": "index.js",
